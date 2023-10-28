@@ -11,31 +11,7 @@
   hosts: server
   gather_facts: false
   tasks:
-    - name: Find all dirs
-      find:
-        paths: "/home/arya/.containers/"
-        file_type: directory
-      register: directories
-
-    - name: Check for docker compose files (yml)
-      stat:
-        path: "{{ item.path }}/docker-compose.yml"
-      ignore_errors: yes
-      register: compose_yml_yml
-      with_items: "{{ directories.files }}"
-      when: item.path.split('/')[-1] != 'ansible'
-        
-    - name: Check for docker compose files (yaml)
-      stat:
-        path: "{{ item.path }}/docker-compose.yaml"
-      register: compose_yml_yaml
-      with_items: "{{ directories.files }}"
-      ignore_errors: yes
-      when: item.path.split('/')[-1] != 'ansible'
-
-    - name: Down, Pull, Up (d)
-      command: "docker compose down && docker compose up -d"
-      args: 
-        chdir: "{{ item.item.path }}"
-      with_items: "{{ compose_yml_yml.results + compose_yml_yaml.results }}"
-      ignore_errors: yes
+    - name: Update Stacks
+      args:
+        chdir: "/home/arya/.containers/"
+      command: "./update.sh"
