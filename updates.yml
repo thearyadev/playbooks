@@ -1,5 +1,5 @@
 - name: Update and Upgrade Server
-  hosts: local-server
+  hosts: server
   gather_facts: false
   become: yes
   tasks:
@@ -8,7 +8,7 @@
         upgrade: yes
         update_cache: yes
 - name: Update Docker Stacks
-  hosts: local-server
+  hosts: server
   gather_facts: false
   tasks:
     - name: Find all dirs
