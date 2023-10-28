@@ -11,7 +11,23 @@
   hosts: server
   gather_facts: false
   tasks:
-    - name: Update Stacks
+    - name: Tear Down and Update Stacks
       args:
         chdir: "/home/arya/.containers/"
       command: "./update.sh"
+- name: Reboot System
+  hosts: server
+  reboot:
+    connect_timeout: 5
+    reboot_timeout: 600
+    pre_reboot_delay: 0
+    post_reboot_delay: 30
+    test_command: whoami
+- name: Start Docker Stacks
+  hosts: server
+  tasks:
+    - name: Start docker Stacks
+      args:
+        chdir: "/home/arya/.containers/"
+      command: "./up.sh"
+
