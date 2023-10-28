@@ -19,6 +19,7 @@
   hosts: server
   tasks:
     - name: Reboot 
+      become: yes
       reboot:
         connect_timeout: 5
         reboot_timeout: 600
