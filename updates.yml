@@ -34,7 +34,7 @@
       when: item.path.split('/')[-1] != 'ansible'
 
     - name: Down, Pull, Up (d)
-      command: "docker compose down"
+      command: "docker compose down && docker compose up -d"
       args: 
         chdir: "{{ item.item.path }}"
       with_items: "{{ compose_yml_yml.results + compose_yml_yaml.results }}"
