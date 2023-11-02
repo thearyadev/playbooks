@@ -39,6 +39,7 @@
       command: tar -cvf .ansible_container_autobackup_{{ current_date_output.stdout }} .containers
 
     - name: Move to NAS
+      become: no
       args: 
         chdir: "/home/arya"
       command: mv .ansible_container_autobackup_{{ current_date_output.stdout }} /mnt/vega/container_backups
