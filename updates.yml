@@ -36,12 +36,12 @@
     - name: Create TAR ball
       args: 
         chdir: "/home/arya"
-      command: tar -cvf .ansible_container_autobackup_{{ current_date_output }} .containers
+      command: tar -cvf .ansible_container_autobackup_{{ current_date_output.stdout }} .containers
 
     - name: Move to NAS
       args: 
         chdir: "/home/arya"
-      command: mv .ansible_container_autobackup_{{ current_date_output }} /mnt/vega/container_backups
+      command: mv .ansible_container_autobackup_{{ current_date_output.stdout }} /mnt/vega/container_backups
 
 
 
