@@ -7,6 +7,7 @@
       apt:
         upgrade: yes
         update_cache: yes
+
 - name: Update Docker Stacks
   hosts: server
   gather_facts: false
@@ -15,6 +16,36 @@
       args:
         chdir: "/home/arya/.containers/"
       command: "./update.sh"
+
+- name: Copy Stacks to NAS
+  hosts: server
+  gather_facts: false
+  become: yes
+  tasks:
+
+    - name: Get current date
+      command: date +"%Y-%m-%d"
+      register: current_date_output
+
+    - name: Ensure TAR balls does not exist
+      args:
+        chdir: "/home/arya"
+      command: rm .ansible_container_autobackup_*
+      ignore_errors: yes
+
+    - name: Create TAR ball
+      args: 
+        chdir: "/home/arya"
+      command: tar -cvf .ansible_container_autobackup_{{ current_date_output }} .containers
+
+    - name: Move to NAS
+      args: 
+        chdir: "/home/arya"
+      command: mv .ansible_container_autobackup_{{ current_date_output }} /mnt/vega/container_backups
+
+
+
+
 - name: Reboot System
   hosts: server
   tasks:
