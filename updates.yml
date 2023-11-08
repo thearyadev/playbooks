@@ -1,13 +1,75 @@
+- name: Update Docker Stacks
+  hosts: server
+  gather_facts: false
+  tasks:
+    - name: Tear Down and Update Stacks
+      args:
+        chdir: "/home/arya/.containers/"
+      command: "./update.sh"
+
+- name: Copy Stacks to NAS
+  hosts: server
+  gather_facts: false
+  become: yes
+  tasks:
+
+    - name: Get current date
+      command: date +"%Y-%m-%d"
+      register: current_date_output
+
+    - name: Ensure TAR balls does not exist
+      args:
+        chdir: "/home/arya"
+      command: rm .ansible_container_autobackup_*
+      ignore_errors: yes
+
+    - name: Create TAR ball
+      args:
+        chdir: "/home/arya"
+      command: tar -cvf .ansible_container_autobackup_{{ current_date_output.stdout }} .containers
+
+    - name: Move to NAS
+      become: no
+      args:
+        chdir: "/home/arya"
+      command: mv .ansible_container_autobackup_{{ current_date_output.stdout }} /mnt/vega/container_backups
+
+- name: Pull OPNsense config and Move to NAS
+  hosts: server
+  gather_facts: false
+  tasks:
+    - name: Download config.xml
+      uri:
+          url: "http://192.168.1.1/api/backup/backup/download"
+          dest: "~/.opnsense-backup-config-{{ lookup('pipe', 'date +%Y%m%d') }}.xml"
+          force: yes  # Overwrite the file if it already exists
+          force_basic_auth: yes
+          user: "0MB5XjvsEVMF5BznlNbmprecRU8hAwPgTKKJakkc87Lbkce78Sl/ukXpJGvicQ2TDFve5o27eYEUfmdC"
+          password: "hZinwQxrpp6BIb1p/vOJ4LvJHGyeiBRjUrrdFRCaIbJeaB7R5/GmFSIb3gJ84BRWvO9DyJn57QQPB/bF"
+    - name: Move to NAS
+      command: mv ~/.opnsense-backup-config-{{ lookup('pipe', 'date +%Y%m%d') }}.xml /mnt/vega/opnsense_backups
+
+
+- name: Update and Upgrade
+  hosts: server
+  gather_facts: false
+  become: yes
+  tasks:
+    - name: Run Updates
+      apt:
+        upgrade: yes
+        update_cache: yes
+
 - name: Pull TrueNAS Config & Secrets
   hosts: server
   gather_facts: false
   tasks:
     - name: Make API request to save configuration
       uri:
-        url: "https://nas.aryankothari.dev/api/v2.0/config/save"
+        url: "https://nas.aryankothari.dev/api/v1.0/config/save"
         method: POST
         headers:
-          Authorization: "Bearer 1-sncpFIygcwy8SOJVIiUBAyhQ0kTiZfMRySly4L6q4TXri5VVuxKHtWaEENHRoVLT"
+          Authorization: "Bearer 0-sncpFIygcwy8SOJVIiUBAyhQ0kTiZfMRySly4L6q4TXri5VVuxKHtWaEENHRoVLT"
           accept: "*/*"
           Content-Type: "application/json"
         body_format: json
@@ -19,91 +81,29 @@
     - name: Save response to backup.nas.tar
       copy:
         content: "{{ result.content }}"
-        dest: "~/backup.nas.smile.tar"
+        dest: "~/.truenas-backup-config-{{ lookup('pipe', 'date +%Y%m%d') }}.tar"
+
+    - name: Move to NAS
+      command: mv ~/.truenas-backup-config-{{ lookup('pipe', 'date +%Y%m%d') }}.tar /mnt/vega/truenas_backups
 
 
+- name: Reboot System
+  hosts: server
+  tasks:
+    - name: Reboot
+      become: yes
+      reboot:
+        connect_timeout: 5
+        reboot_timeout: 600
+        pre_reboot_delay: 0
+        post_reboot_delay: 30
+        test_command: whoami
 
-#- name: Update Docker Stacks
-#  hosts: server
-#  gather_facts: false
-#  tasks:
-#    - name: Tear Down and Update Stacks
-#      args:
-#        chdir: "/home/arya/.containers/"
-#      command: "./update.sh"
-#
-#- name: Copy Stacks to NAS
-#  hosts: server
-#  gather_facts: false
-#  become: yes
-#  tasks:
-#
-#    - name: Get current date
-#      command: date +"%Y-%m-%d"
-#      register: current_date_output
-#
-#    - name: Ensure TAR balls does not exist
-#      args:
-#        chdir: "/home/arya"
-#      command: rm .ansible_container_autobackup_*
-#      ignore_errors: yes
-#
-#    - name: Create TAR ball
-#      args:
-#        chdir: "/home/arya"
-#      command: tar -cvf .ansible_container_autobackup_{{ current_date_output.stdout }} .containers
-#
-#    - name: Move to NAS
-#      become: no
-#      args:
-#        chdir: "/home/arya"
-#      command: mv .ansible_container_autobackup_{{ current_date_output.stdout }} /mnt/vega/container_backups
-#
-#- name: Pull OPNsense config and Move to NAS
-#  hosts: server
-#  gather_facts: false
-#  tasks:
-#    - name: Download config.xml
-#      uri:
-#          url: "http://192.168.1.1/api/backup/backup/download"
-#          dest: "~/.opnsense-backup-config-{{ lookup('pipe', 'date +%Y%m%d') }}.xml"
-#          force: yes  # Overwrite the file if it already exists
-#          force_basic_auth: yes
-#          user: "0MB5XjvsEVMF5BznlNbmprecRU8hAwPgTKKJakkc87Lbkce78Sl/ukXpJGvicQ2TDFve5o27eYEUfmdC"
-#          password: "hZinwQxrpp6BIb1p/vOJ4LvJHGyeiBRjUrrdFRCaIbJeaB7R5/GmFSIb3gJ84BRWvO9DyJn57QQPB/bF"
-#    - name: Move to NAS
-#      command: mv ~/.opnsense-backup-config-{{ lookup('pipe', 'date +%Y%m%d') }}.xml /mnt/vega/opnsense_backups
-#
-#
-#- name: Update and Upgrade
-#  hosts: server
-#  gather_facts: false
-#  become: yes
-#  tasks:
-#    - name: Run Updates
-#      apt:
-#        upgrade: yes
-#        update_cache: yes
-#
-#
-#
-#- name: Reboot System
-#  hosts: server
-#  tasks:
-#    - name: Reboot
-#      become: yes
-#      reboot:
-#        connect_timeout: 5
-#        reboot_timeout: 600
-#        pre_reboot_delay: 0
-#        post_reboot_delay: 30
-#        test_command: whoami
-#
-#- name: Start Docker Stacks
-#  hosts: server
-#  tasks:
-#    - name: Start docker Stacks
-#      args:
-#        chdir: "/home/arya/.containers/"
-#      command: "./up.sh"
-#
+- name: Start Docker Stacks
+  hosts: server
+  tasks:
+    - name: Start docker Stacks
+      args:
+        chdir: "/home/arya/.containers/"
+      command: "./up.sh"
+
