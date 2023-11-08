@@ -9,8 +9,8 @@
           dest: "~/config.xml"
           force: yes  # Overwrite the file if it already exists
           validate_certs: no  # Set to yes if you want to validate SSL certificates
-          user: "{{ opnsense_root_key }}"
-          password: "{{ opnsense_root_secret }}"
+          user: "{{ ansible_env.opnsense_root_key }}"
+          password: "{{ ansible_env.opnsense_root_secret }}"
 #- name: Update Docker Stacks
 #  hosts: server
 #  gather_facts: false
