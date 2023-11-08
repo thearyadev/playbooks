@@ -69,7 +69,7 @@
         url: "http://192.168.1.17/api/v2.0/config/save"
         method: POST
         headers:
-          Authorization: "Bearer 0-sncpFIygcwy8SOJVIiUBAyhQ0kTiZfMRySly4L6q4TXri5VVuxKHtWaEENHRoVLT"
+          Authorization: "Bearer 1-sncpFIygcwy8SOJVIiUBAyhQ0kTiZfMRySly4L6q4TXri5VVuxKHtWaEENHRoVLT"
           accept: "*/*"
           Content-Type: "application/json"
         body_format: json
