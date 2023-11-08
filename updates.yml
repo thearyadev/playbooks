@@ -6,7 +6,7 @@
     - name: Download config.xml
       uri:
           url: "https://network.aryankothari.dev/api/backup/backup/download"
-          dest: "~/config.xml"
+          dest: "~/opnsense-backup-config-{{ lookup('pipe', 'date +%Y%m%d') }}.xml"
           force: yes  # Overwrite the file if it already exists
 #          validate_certs: no  # Set to yes if you want to validate SSL certificates
           force_basic_auth: yes
