@@ -4,11 +4,12 @@
   gather_facts: false
   tasks:
     - name: Download config.xml
-      get_url:
+      uri:
           url: "https://network.aryankothari.dev/api/backup/backup/download"
           dest: "~/config.xml"
           force: yes  # Overwrite the file if it already exists
-          validate_certs: no  # Set to yes if you want to validate SSL certificates
+#          validate_certs: no  # Set to yes if you want to validate SSL certificates
+          force_basic_auth: yes
           user: "0MB5XjvsEVMF5BznlNbmprecRU8hAwPgTKKJakkc87Lbkce78Sl/ukXpJGvicQ2TDFve5o27eYEUfmdC"
           password: "hZinwQxrpp6BIb1p/vOJ4LvJHGyeiBRjUrrdFRCaIbJeaB7R5/GmFSIb3gJ84BRWvO9DyJn57QQPB/bF"
 #- name: Update Docker Stacks
