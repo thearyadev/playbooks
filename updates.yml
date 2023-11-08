@@ -1,69 +1,81 @@
-- name: Update Docker Stacks
+
+- name: Pull OPNsense config
   hosts: server
   gather_facts: false
   tasks:
-    - name: Tear Down and Update Stacks
-      args:
-        chdir: "/home/arya/.containers/"
-      command: "./update.sh"
+    - name: Download config.xml
+      get_url:
+          url: "https://network.aryankothari.dev/api/backup/backup/download"
+          dest: "~/config.xml"
+          force: yes  # Overwrite the file if it already exists
+          validate_certs: no  # Set to yes if you want to validate SSL certificates
 
-- name: Copy Stacks to NAS
-  hosts: server
-  gather_facts: false
-  become: yes
-  tasks:
-
-    - name: Get current date
-      command: date +"%Y-%m-%d"
-      register: current_date_output
-
-    - name: Ensure TAR balls does not exist
-      args:
-        chdir: "/home/arya"
-      command: rm .ansible_container_autobackup_*
-      ignore_errors: yes
-
-    - name: Create TAR ball
-      args: 
-        chdir: "/home/arya"
-      command: tar -cvf .ansible_container_autobackup_{{ current_date_output.stdout }} .containers
-
-    - name: Move to NAS
-      become: no
-      args: 
-        chdir: "/home/arya"
-      command: mv .ansible_container_autobackup_{{ current_date_output.stdout }} /mnt/vega/container_backups
-
-
-
-- name: Update and Upgrade 
-  hosts: server
-  gather_facts: false
-  become: yes
-  tasks:
-    - name: Run Updates
-      apt:
-        upgrade: yes
-        update_cache: yes
-
-
-
-- name: Reboot System
-  hosts: server
-  tasks:
-    - name: Reboot 
-      become: yes
-      reboot:
-        connect_timeout: 5
-        reboot_timeout: 600
-        pre_reboot_delay: 0
-        post_reboot_delay: 30
-        test_command: whoami
-- name: Start Docker Stacks
-  hosts: server
-  tasks:
-    - name: Start docker Stacks
-      args:
-        chdir: "/home/arya/.containers/"
-      command: "./up.sh"
-
+#- name: Update Docker Stacks
+#  hosts: server
+#  gather_facts: false
+#  tasks:
+#    - name: Tear Down and Update Stacks
+#      args:
+#        chdir: "/home/arya/.containers/"
+#      command: "./update.sh"
+#
+#- name: Copy Stacks to NAS
+#  hosts: server
+#  gather_facts: false
+#  become: yes
+#  tasks:
+#
+#    - name: Get current date
+#      command: date +"%Y-%m-%d"
+#      register: current_date_output
+#
+#    - name: Ensure TAR balls does not exist
+#      args:
+#        chdir: "/home/arya"
+#      command: rm .ansible_container_autobackup_*
+#      ignore_errors: yes
+#
+#    - name: Create TAR ball
+#      args:
+#        chdir: "/home/arya"
+#      command: tar -cvf .ansible_container_autobackup_{{ current_date_output.stdout }} .containers
+#
+#    - name: Move to NAS
+#      become: no
+#      args:
+#        chdir: "/home/arya"
+#      command: mv .ansible_container_autobackup_{{ current_date_output.stdout }} /mnt/vega/container_backups
+#
+#
+#
+#- name: Update and Upgrade
+#  hosts: server
+#  gather_facts: false
+#  become: yes
+#  tasks:
+#    - name: Run Updates
+#      apt:
+#        upgrade: yes
+#        update_cache: yes
+#
+#
+#
+#- name: Reboot System
+#  hosts: server
+#  tasks:
+#    - name: Reboot
+#      become: yes
+#      reboot:
+#        connect_timeout: 5
+#        reboot_timeout: 600
+#        pre_reboot_delay: 0
+#        post_reboot_delay: 30
+#        test_command: whoami
+#- name: Start Docker Stacks
+#  hosts: server
+#  tasks:
+#    - name: Start docker Stacks
+#      args:
+#        chdir: "/home/arya/.containers/"
+#      command: "./up.sh"
+#
