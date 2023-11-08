@@ -1,17 +1,28 @@
-
-- name: Pull OPNsense config
+- name: Pull TrueNAS Config & Secrets
   hosts: server
   gather_facts: false
   tasks:
-    - name: Download config.xml
+    - name: Make API request to save configuration
       uri:
-          url: "https://network.aryankothari.dev/api/backup/backup/download"
-          dest: "~/opnsense-backup-config-{{ lookup('pipe', 'date +%Y%m%d') }}.xml"
-          force: yes  # Overwrite the file if it already exists
-#          validate_certs: no  # Set to yes if you want to validate SSL certificates
-          force_basic_auth: yes
-          user: "0MB5XjvsEVMF5BznlNbmprecRU8hAwPgTKKJakkc87Lbkce78Sl/ukXpJGvicQ2TDFve5o27eYEUfmdC"
-          password: "hZinwQxrpp6BIb1p/vOJ4LvJHGyeiBRjUrrdFRCaIbJeaB7R5/GmFSIb3gJ84BRWvO9DyJn57QQPB/bF"
+        url: "https://nas.aryankothari.dev/api/v2.0/config/save"
+        method: POST
+        headers:
+          Authorization: "Bearer 1-sncpFIygcwy8SOJVIiUBAyhQ0kTiZfMRySly4L6q4TXri5VVuxKHtWaEENHRoVLT"
+          accept: "*/*"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          secretseed: true
+        return_content: yes
+      register: result
+
+    - name: Save response to backup.nas.tar
+      copy:
+        content: "{{ result.content }}"
+        dest: "~/backup.nas.smile.tar"
+
+
+
 #- name: Update Docker Stacks
 #  hosts: server
 #  gather_facts: false
@@ -48,6 +59,20 @@
 #        chdir: "/home/arya"
 #      command: mv .ansible_container_autobackup_{{ current_date_output.stdout }} /mnt/vega/container_backups
 #
+#- name: Pull OPNsense config and Move to NAS
+#  hosts: server
+#  gather_facts: false
+#  tasks:
+#    - name: Download config.xml
+#      uri:
+#          url: "http://192.168.1.1/api/backup/backup/download"
+#          dest: "~/.opnsense-backup-config-{{ lookup('pipe', 'date +%Y%m%d') }}.xml"
+#          force: yes  # Overwrite the file if it already exists
+#          force_basic_auth: yes
+#          user: "0MB5XjvsEVMF5BznlNbmprecRU8hAwPgTKKJakkc87Lbkce78Sl/ukXpJGvicQ2TDFve5o27eYEUfmdC"
+#          password: "hZinwQxrpp6BIb1p/vOJ4LvJHGyeiBRjUrrdFRCaIbJeaB7R5/GmFSIb3gJ84BRWvO9DyJn57QQPB/bF"
+#    - name: Move to NAS
+#      command: mv ~/.opnsense-backup-config-{{ lookup('pipe', 'date +%Y%m%d') }}.xml /mnt/vega/opnsense_backups
 #
 #
 #- name: Update and Upgrade
@@ -73,6 +98,7 @@
 #        pre_reboot_delay: 0
 #        post_reboot_delay: 30
 #        test_command: whoami
+#
 #- name: Start Docker Stacks
 #  hosts: server
 #  tasks:
