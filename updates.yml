@@ -1,13 +1,3 @@
-- name: Update and Upgrade Server
-  hosts: server
-  gather_facts: false
-  become: yes
-  tasks:
-    - name: Run Updates 
-      apt:
-        upgrade: yes
-        update_cache: yes
-
 - name: Update Docker Stacks
   hosts: server
   gather_facts: false
@@ -44,6 +34,17 @@
         chdir: "/home/arya"
       command: mv .ansible_container_autobackup_{{ current_date_output.stdout }} /mnt/vega/container_backups
 
+
+
+- name: Update and Upgrade 
+  hosts: server
+  gather_facts: false
+  become: yes
+  tasks:
+    - name: Run Updates
+      apt:
+        upgrade: yes
+        update_cache: yes
 
 
 
