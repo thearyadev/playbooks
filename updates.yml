@@ -41,13 +41,13 @@
     - name: Download config.xml
       uri:
           url: "http://192.168.1.1/api/backup/backup/download"
-          dest: "~/.opnsense-backup-config-{{ lookup('pipe', 'date +%Y%m%d') }}.xml"
+          dest: "~/opnsense-backup-config-{{ lookup('pipe', 'date +%Y%m%d') }}.xml"
           force: yes  # Overwrite the file if it already exists
           force_basic_auth: yes
           user: "0MB5XjvsEVMF5BznlNbmprecRU8hAwPgTKKJakkc87Lbkce78Sl/ukXpJGvicQ2TDFve5o27eYEUfmdC"
           password: "hZinwQxrpp6BIb1p/vOJ4LvJHGyeiBRjUrrdFRCaIbJeaB7R5/GmFSIb3gJ84BRWvO9DyJn57QQPB/bF"
     - name: Move to NAS
-      command: mv ~/.opnsense-backup-config-{{ lookup('pipe', 'date +%Y%m%d') }}.xml /mnt/vega/opnsense_backups
+      command: mv ~/opnsense-backup-config-{{ lookup('pipe', 'date +%Y%m%d') }}.xml /mnt/vega/opnsense_backups
 
 
 - name: Update and Upgrade
@@ -81,10 +81,10 @@
     - name: Save response to backup.nas.tar
       copy:
         content: "{{ result.content }}"
-        dest: "~/.truenas-backup-config-{{ lookup('pipe', 'date +%Y%m%d') }}.tar"
+        dest: "~/truenas-backup-config-{{ lookup('pipe', 'date +%Y%m%d') }}.tar"
 
     - name: Move to NAS
-      command: mv ~/.truenas-backup-config-{{ lookup('pipe', 'date +%Y%m%d') }}.tar /mnt/vega/truenas_backups
+      command: mv ~/truenas-backup-config-{{ lookup('pipe', 'date +%Y%m%d') }}.tar /mnt/vega/truenas_backups
 
 
 - name: Reboot System
