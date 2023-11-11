@@ -1,3 +1,8 @@
+- name: notify
+  hosts: server
+  command: "curl -d "Backup Playbook has started. https://n2.aryankothari.dev"
+  ignore_errors: yes
+
 - name: Update Docker Stacks
   hosts: server
   gather_facts: false
@@ -158,3 +163,8 @@
       args:
         chdir: "/home/arya/.containers/"
       command: "./up.sh"
+
+- name: notify complete
+  hosts: server
+  command: "curl -d "Backup Playbook was successful. https://n2.aryankothari.dev"
+  ignore_errors: yes
