@@ -1,0 +1,6 @@
+- name: Prune orphan Images
+  hosts: k3s
+  become: false
+  tasks:
+    - name: Prune Orphan Images
+      ansible.builtin.shell: crictl rmi --prune

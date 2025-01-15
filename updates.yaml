@@ -1,0 +1,17 @@
+- name: Update Debian Hosts
+  hosts: debian
+  tasks:
+    - name: Update and upgrade apt packages
+      become: false
+      apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 86400
+- name: Update Arch Hosts
+  hosts: arch
+  become: false
+  tasks:
+    - name: Full system upgrade
+      community.general.pacman:
+        update_cache: true
+        upgrade: true

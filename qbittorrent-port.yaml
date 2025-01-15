@@ -1,0 +1,6 @@
+- name: 
+  hosts: k3s-master-root
+  become: false
+  tasks:
+    - name: run script
+      ansible.builtin.shell: "/home/arya/portmap.sh"
