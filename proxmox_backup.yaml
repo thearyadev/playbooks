@@ -1,0 +1,23 @@
+- name: Proxmox VM Backup
+  hosts: proxmox-nodes
+  become: false
+  serial: 1
+  tasks:
+    - name: Get list of VM IDs
+      ansible.builtin.shell: "qm list | awk 'NR>1 {print $1}'"
+      register: vm_ids_output
+    - name: Set VM IDs as a list
+      set_fact:
+        vm_ids: "{{ vm_ids_output.stdout_lines }}"
+    - name: Clean old backups
+      ansible.builtin.shell: "rm /mnt/critical/backups/proxmox/dump/*{{ item }}*"
+      loop: "{{ vm_ids }}"
+      delegate_to: localhost
+    - name: Run vzdump for each VM
+      ansible.builtin.shell: "vzdump {{ item }} -compress zstd -mode snapshot -storage nas-3"
+      loop: "{{ vm_ids }}"
+      when: vm_ids | length > 0
+      register: vzdump_output
+    - name: Show vzdump output
+      debug:
+        var: vzdump_output.results
