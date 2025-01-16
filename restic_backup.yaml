@@ -5,4 +5,4 @@
     - name: create restic snapshots
       ansible.builtin.shell: rbackup
     - name: prune restic snapshots
-      ansible.builtin.shell: source /root/restic-env && restic forget --prune --keep-last 3
+      ansible.builtin.shell: source /root/restic-env && restic forget --prune --keep-last 1
