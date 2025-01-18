@@ -1,0 +1,7 @@
+- name: 
+  hosts: localhost
+  become: false
+  tasks:
+    - name: clear old backups
+      ansible.builtin.shell: curl -d "Backup was successful." https://n2.aryankothari.dev/backup
+      ignore_errors: true
