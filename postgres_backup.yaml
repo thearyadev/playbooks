@@ -4,8 +4,5 @@
   vars: 
     filename: pg_dump_{{ansible_date_time.date}}.sql
   tasks:
-    - name: clear old backups
-      ansible.builtin.shell: kubectl exec deployments/postgres --namespace default -- bash -c 'rm /nas/pg_dump_*.sql'
-      ignore_errors: true
     - name: Create Postgres backup
       ansible.builtin.shell: kubectl exec deployments/postgres --namespace default -- bash -c 'pg_dumpall > /nas/{{filename}}'
