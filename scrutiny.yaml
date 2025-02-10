@@ -1,5 +1,8 @@
 - name: 
-  hosts: proxmox-1
+  hosts: 
+    - proxmox-1
+    - proxmox-2
+    - proxmox-3
   become: false
   tasks:
     - name: run collector
