@@ -13,8 +13,9 @@
       ansible.builtin.shell: "rm /mnt/critical/backups/proxmox/dump/*{{ item }}*"
       loop: "{{ vm_ids }}"
       delegate_to: localhost
+      ignore_errors: true
     - name: Run vzdump for each VM
-      ansible.builtin.shell: "vzdump {{ item }} -compress zstd -mode snapshot -storage nas-3"
+      ansible.builtin.shell: "vzdump {{ item }} -compress zstd -mode snapshot -storage backup"
       loop: "{{ vm_ids }}"
       when: vm_ids | length > 0
       register: vzdump_output
