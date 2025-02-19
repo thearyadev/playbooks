@@ -1,0 +1,18 @@
+- name: 
+  hosts: 
+    - proxmox-1
+    - proxmox-2
+    - proxmox-3
+  become: false
+  tasks:
+    - name: install smartmontools
+      ansible.builtin.shell: apt install smartmontools -y 
+
+    - name: make directory for the binary
+      ansible.builtin.shell: mkdir -p /opt/scrutiny/bin
+
+    - name: download the binary into that directory
+      ansible.builtin.shell: curl -L https://github.com/AnalogJ/scrutiny/releases/download/v0.8.1/scrutiny-collector-metrics-linux-amd64 > /opt/scrutiny/bin/scrutiny-collector-metrics-linux-amd64
+
+    - name: make it exacutable
+      ansible.builtin.shell: chmod +x /opt/scrutiny/bin/scrutiny-collector-metrics-linux-amd64
