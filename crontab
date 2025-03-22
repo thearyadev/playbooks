@@ -1,6 +1,6 @@
 
 # scrutiny, runs everu 10 minutes
-*/10 * * * * ANSIBLE_LOG_PATH=~/.scrutiny.ansible.log ansible-playbook -i /home/arya/ansible/inventory.ini /home/arya/ansible/scrutiny.yaml
+0 0 * * * ANSIBLE_LOG_PATH=~/.scrutiny.ansible.log ansible-playbook -i /home/arya/ansible/inventory.ini /home/arya/ansible/scrutiny.yaml
 
 # qbittorrent port set, runs every minute
 * * * * * ANSIBLE_LOG_PATH=~/.portmap.ansible.log ansible-playbook -i /home/arya/ansible/inventory.ini /home/arya/ansible/qbittorrent-port.yaml
